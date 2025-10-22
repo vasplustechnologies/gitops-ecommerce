@@ -19,3 +19,5 @@ Write-Host "2. Update GitHub URL in manifests/application-set.yaml" -ForegroundC
 Write-Host "3. Push this code to GitHub" -ForegroundColor White
 Write-Host "4. Configure DockerHub webhooks" -ForegroundColor White
 
+
+
