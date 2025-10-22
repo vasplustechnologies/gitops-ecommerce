@@ -1,0 +1,34 @@
+﻿apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: mofwili-ecommerce
+  namespace: argocd
+spec:
+  generators:
+  - list:
+      elements:
+      - name: order-service
+        path: apps/order-service
+      - name: inventory-service
+        path: apps/inventory-service
+      - name: notification-service
+        path: apps/notification-service
+  template:
+    metadata:
+      name: '{{name}}'
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/vasplustechnologies/gitops-ecommerce.git
+        targetRevision: main
+        path: '{{path}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: ecommerce
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+        - CreateNamespace=true
+

@@ -1,0 +1,31 @@
+﻿apiVersion: argoproj.io/v1alpha1
+kind: Sensor
+metadata:
+  name: mofwili-dockerhub-sensor
+  namespace: argo-events
+spec:
+  dependencies:
+  - name: dockerhub-dep
+    eventSourceName: dockerhub-events
+    eventName: mofwili-webhook
+  triggers:
+  - template:
+      name: trigger-workflow
+      argoWorkflow:
+        operation: create
+        source:
+          resource:
+            apiVersion: argoproj.io/v1alpha1
+            kind: Workflow
+            metadata:
+              generateName: nodejs-ci-cd-
+              namespace: argo-workflows
+            spec:
+              entrypoint: main-pipeline
+              serviceAccountName: default
+              arguments:
+                parameters:
+                - name: image-name
+                  value: "{{ dependencies.dockerhub-dep.body.repository.repo_name }}"
+                - name: image-tag  
+                  value: "{{ dependencies.dockerhub-dep.body.push_data.tag }}"
